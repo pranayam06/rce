@@ -15,15 +15,24 @@ const client = new MongoClient(uri);
 // Serve static files (frontend)
 app.use(express.static('public'));
 
+// Store the current document state
+let documentState = '';
+
 // WebSocket connection handler
 io.on('connection', (socket) => {
     console.log('A user connected:', socket.id);
 
+    // Send the current document state to the new user
+    socket.emit('document', documentState);
+
     // Listen for edits from clients
     socket.on('edit', async (operation) => {
         try {
-            // Broadcast the edit to all other clients
-            socket.broadcast.emit('update', operation);
+            // Apply the operation to the document state
+            documentState = applyOperation(documentState, operation);
+
+            // Broadcast the updated document state to all clients
+            io.emit('update', { operation, documentState });
 
             // Save the edit to MongoDB
             await client.connect();
@@ -45,6 +54,14 @@ io.on('connection', (socket) => {
         console.log('A user disconnected:', socket.id);
     });
 });
+
+// Function to apply an operation to the document state
+function applyOperation(document, operation) {
+    const { text, from, to } = operation;
+    const before = document.slice(0, from);
+    const after = document.slice(to);
+    return before + text + after;
+}
 
 // Start the server
 const PORT = process.env.PORT || 3000;
