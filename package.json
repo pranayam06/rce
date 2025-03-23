@@ -1,0 +1,19 @@
+{
+  "name": "realtime-code-editor",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "aws-sdk": "^2.1692.0",
+    "codemirror": "^6.0.1",
+    "express": "^4.21.2",
+    "mongodb": "^6.15.0",
+    "socket.io": "^4.8.1"
+  }
+}
